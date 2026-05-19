@@ -3,36 +3,20 @@ import cors from "cors";
 import draftRouter from "./routes/draft";
 
 const app = express();
-//app.use(cors());
 app.use(cors({
-  origin: 'https://soccer-wine.vercel.app'
+  origin: ['http://localhost:5173', 'https://soccer-wine.vercel.app']
 }));
 app.use(express.json());
 
-// Use the PORT Amplify gives us (fallback 3000 for local dev)
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 /* -------- Root + health -------- */
 app.get("/", (_req, res) => {
-  res.json({ ok: true, msg: "Express is alive on Amplify" });
+  res.json({ ok: true });
 });
 
 app.get("/health", (_req, res) => {
   res.json({ ok: true });
-});
-
-/* -------- Mock auth (dev only) -------- */
-app.post("/login", (req, res) => {
-  const { userName } = req.body;
-  if (!userName) {
-    return res.status(400).json({ errorMessage: "User name is required to log in." });
-  }
-  const token = `mock-authentication-token-for-${userName.toLowerCase()}`;
-  res.json({ loginMessage: `Welcome, ${userName}! You are now logged in.`, authenticationToken: token });
-});
-
-app.post("/logout", (_req, res) => {
-  res.json({ logoutMessage: "User has been logged out successfully." });
 });
 
 /* -------- Routes -------- */

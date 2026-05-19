@@ -19,7 +19,7 @@ export type DraftGameState = {
   currentParticipantIndex: number;
   participants: Participant[];
   selectedPlayerIds: Set<string>; // always store as normalized string
-  availablePlayers: Player[]; // Ruby add
+  availablePlayers: Player[];
 };
 
 // --- Utils ---
@@ -82,7 +82,6 @@ export function pickPlayer(playerUniqueId: string) {
 // Moves the turn to the next participant
 export function moveToNextTurn() {
   draftGameState.currentParticipantIndex++;
-
   if (
     draftGameState.currentParticipantIndex >=
     draftGameState.participants.length

@@ -1,5 +1,8 @@
 {
   "devDependencies": {
-    "@aws-amplify/cli": "^14.2.2"
+    "@aws-amplify/cli": "^14.2.2",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.9.0"
   }
 }

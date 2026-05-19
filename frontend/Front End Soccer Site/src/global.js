@@ -1,6 +1,3 @@
-// Counting the amount of rounds we have
-export const roundCounter = 5;
-
 // Declaring Athelete Class
 export class Athlete {
   constructor(statOne, statTwo, statThree, statFour, pointCost, id) {
@@ -23,14 +20,11 @@ export class Player {
   }
 }
 
-// Declaring all Atheletes
-const a0  = new Athlete('#','#','#','#',12, 0);
+// Placeholder athlete instances used by playerList (will be replaced with real data in Ticket 8)
 const a1  = new Athlete('#','#','#','#',15, 1);
 const a2  = new Athlete('#','#','#','#', 7, 2);
 const a3  = new Athlete('#','#','#','#',19, 3);
-const a4  = new Athlete('#','#','#','#',23, 4);
 const a5  = new Athlete('#','#','#','#', 9, 5);
-const a6  = new Athlete('#','#','#','#',14, 6);
 const a7  = new Athlete('#','#','#','#',17, 7);
 const a8  = new Athlete('#','#','#','#',21, 8);
 const a9  = new Athlete('#','#','#','#', 8, 9);
@@ -40,22 +34,13 @@ const a12 = new Athlete('#','#','#','#',13,12);
 const a13 = new Athlete('#','#','#','#',20,13);
 const a14 = new Athlete('#','#','#','#',11,14);
 const a15 = new Athlete('#','#','#','#',16,15);
-const a16 = new Athlete('#','#','#','#',18,16);
-const a17 = new Athlete('#','#','#','#',10,17);
 const a18 = new Athlete('#','#','#','#',22,18);
 const a19 = new Athlete('#','#','#','#',24,19);
 
-export const athleteList = [
-  a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19
-];
-
-// Delaring All Players
+// Declaring All Players
 const p0 = new Player("Alice", [a1,a7,a8,a10,a19], 100, 0);
 const p1 = new Player("Noah",  [a2,a5,a11,a14,a15], 200, 1);
 const p2 = new Player("James", [a3,a9,a12,a18,a13], 300, 2);
 const p3 = new Player(" ", [], 300, 3);
 
 export const playerList = [p0,p1,p2,p3];
-
-// Athletes that are already on a team
-export const selected = new Set([a1,a7,a8,a10,a19,a2,a5,a11,a14,a15,a3,a9,a12,a18,a13]);
