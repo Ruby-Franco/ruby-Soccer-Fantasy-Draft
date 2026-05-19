@@ -114,3 +114,39 @@ html, body, #root { height:100%; width:100%; margin:0; }
 }
 .login-btn:hover{ filter:brightness(1.05); }
 .login-btn:active{ transform:translateY(1px); }
+
+@media (max-width: 480px) {
+  .brand-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .logo-circle {
+    flex: 0 0 80px;
+    height: 80px;
+    font-size: 48px;
+  }
+
+  .login-title {
+    font-size: clamp(36px, 9vw, 52px);
+    text-align: center;
+    align-items: center;
+  }
+
+  .field,
+  .login-btn {
+    width: 90vw;
+    max-width: 90vw;
+  }
+
+  .field input {
+    font-size: 16px; /* prevent iOS auto-zoom on focus */
+    min-height: 48px;
+    box-sizing: border-box;
+  }
+
+  .login-btn {
+    min-height: 48px;
+    font-size: 1rem;
+  }
+}

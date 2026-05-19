@@ -230,14 +230,9 @@ function UserChoice(){
 
             </div>
 
-            <div style={{ overflow: 'hidden' }}>
-                <button 
-                    style={{ float: 'right', marginRight: '3rem' ,  margin: '2rem auto 2rem auto' }}
-                    onClick={handleSelect}
-                >
-                    Select
-                </button>
-            </div>
+            <button className="select-btn" onClick={handleSelect}>
+                Select
+            </button>
 
         </div>
     ); 

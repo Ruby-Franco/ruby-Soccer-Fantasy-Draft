@@ -139,5 +139,68 @@ body {
 }
 
 .athletes-list::-webkit-scrollbar-thumb:hover {
-  background: #2d4667;  /* Darker blue on hover */
+  background: #2d4667;
+}
+
+.select-btn {
+  display: block;
+  margin: 1.5rem auto;
+  padding: 12px 36px;
+  background: #f4a460;
+  color: #3C4F76;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  min-height: 48px;
+  transition: filter 0.15s, transform 0.05s;
+}
+.select-btn:hover { filter: brightness(1.1); }
+.select-btn:active { transform: translateY(1px); }
+
+@media (max-width: 480px) {
+  .status-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .athletes-container {
+    padding: 1rem;
+  }
+
+  .athletes-header {
+    grid-template-columns: 2fr 1fr;
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+
+  .athletes-header h2:nth-child(2),
+  .athletes-header h2:nth-child(3) {
+    display: none;
+  }
+
+  .player-row {
+    grid-template-columns: 2fr 1fr;
+    padding: 10px 8px;
+    font-size: 0.9rem;
+  }
+
+  .player-row > div:nth-child(2),
+  .player-row > div:nth-child(3) {
+    display: none;
+  }
+
+  .athletes-list {
+    padding: 0 0.5rem 1rem;
+    max-height: 300px;
+  }
+
+  .select-btn {
+    width: calc(100% - 3rem);
+    max-width: 90vw;
+    margin: 1rem 1.5rem 2rem;
+  }
 }

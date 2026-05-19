@@ -132,3 +132,42 @@ body {
     color: #8a8aaa;
     font-style: italic;
 }
+
+@media (max-width: 768px) {
+  .teams-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .page-title {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .team-display-page {
+    padding: 1rem;
+  }
+
+  .teams-container {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+  }
+
+  .page-title {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .team-name {
+    font-size: 1.4rem;
+  }
+
+  .team-stats {
+    gap: 1rem;
+    padding: 0.75rem;
+  }
+
+  .player-details {
+    font-size: 0.8rem;
+  }
+}
