@@ -18,6 +18,10 @@ function UserChoice(){
     const { name } = location.state;
     const [myParticipantId] = useState(name);
 
+    useEffect(() => {
+    check_InitializedDraft();
+    }, []);
+
    useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/draft/current`)
         .then(res => res.json())
