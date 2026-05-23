@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import './NameEntry.css';
+import './Login.css';
 
 function NameEntry() {
   const navigate = useNavigate();
@@ -11,28 +11,34 @@ function NameEntry() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate('/waiting', { state: { name: name } });
+    navigate('/waiting', { state: { name: name, mode: mode } });
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-        <div className="field">
-            <input
-                id="name"
-                name="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your name"
-                required
-                autoFocus
-                autoCapitalize="off"
-                autoCorrect="off"
-            />
-            <button type="submit" className="name-btn"> Next</button>  
+    <div className="login-page">
+        <div className="bg-ellipse" aria-hidden="true" />
+        <div className="login-card">
+            <div className="brand-row">
+                <div className="logo-circle" style={{ marginLeft: '120px' }}>⚽</div>
+
+            <form className="nameentry-form" onSubmit={handleSubmit}>
+                <div className="field">
+                     <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Enter your name"
+                        required
+                        autoFocus
+                    />
+                </div>
+                <button type="submit" className="login-btn">Next</button>
+            </form>
+            </div>
         </div>
-    </form>
-  );
+    </div>
+);
+
 }
 
 export default NameEntry;

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './TeamDisplay.css';
 
 //const API_URL = 'http://localhost:3000/draft';
@@ -7,6 +8,10 @@ const API_URL =  `${import.meta.env.VITE_API_URL}/draft`;
 function TeamDisplay() {
     const [myTeam, setMyTeam] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const location = useLocation();
+    const { name } = location.state;
+    const [myParticipantId] = useState(name);
 
     // Hard-coded teams for Alice, Noah, and James
     // Excluding top 5: Achraf Hakimi, Marquinhos, Gianluigi Donnarumma, Ousmane Dembélé, Yann Sommer
@@ -39,7 +44,7 @@ function TeamDisplay() {
             
             // Get just YOUR team (user1 or You)
             const myParticipant = data.participants.find(
-                p => p.participantId === "user1" || p.participantId === "You"
+                p => p.participantId === name || p.participantId === name
             );
             
             setMyTeam(myParticipant?.team || []);

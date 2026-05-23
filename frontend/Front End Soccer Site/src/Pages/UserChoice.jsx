@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './UserChoice.css';
 //const API_URL = 'http://localhost:3000/draft';
 const API_URL = `${import.meta.env.VITE_API_URL}/draft`;
@@ -13,10 +13,15 @@ function UserChoice(){
     const [pointsLeft, setPointsLeft] = useState(100);
     const [currentTeam, setCurrentTeam] = useState([]);
     const [currentParticipant, setCurrentParticipant] = useState(null);
-    const [myParticipantId] = useState("user1");
 
-    useEffect(() => {
-        check_InitializedDraft(); 
+    const location = useLocation();
+    const { name } = location.state;
+    const [myParticipantId] = useState(name);
+
+   useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/draft/current`)
+        .then(res => res.json())
+        .then(data => setCurrentParticipant(data));
     }, []);
 
     // Add another useEffect to refresh when component is visible
@@ -69,7 +74,7 @@ function UserChoice(){
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     participants: [
-                        { participantId: "user1", teamId: "team1", order: 0, team: [] },
+                        { participantId: myParticipantId, teamId: "team1", order: 0, team: [] },
                         { participantId: "user2", teamId: "team2", order: 1, team: [] }
                     ]
                 })
@@ -160,10 +165,10 @@ function UserChoice(){
                 const myParticipant = draftState.participants.find(p => p.participantId === myParticipantId);
                 
                 // END GAME AFTER 2 rounds
-                if (myParticipant && myParticipant.team.length >= 2) {
-                    navigate('/teamdisplay');
+                if (myParticipant && myParticipant.team.length >= 3) {
+                    navigate('/teamdisplay', { state: { name, mode: 'create' } });
                 } else {
-                    navigate('/waiting');
+                    navigate('/waiting', { state: { name, mode: 'create' } });
                 }
 
             } else {
