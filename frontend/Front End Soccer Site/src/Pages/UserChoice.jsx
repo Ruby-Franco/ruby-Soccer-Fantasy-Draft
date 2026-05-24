@@ -19,79 +19,8 @@ function UserChoice(){
     const [myParticipantId] = useState(name);
 
     useEffect(() => {
-    check_InitializedDraft();
+        fetchDraftState();
     }, []);
-
-   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/draft/current`)
-        .then(res => res.json())
-        .then(data => setCurrentParticipant(data));
-    }, []);
-
-    // Add another useEffect to refresh when component is visible
-    useEffect(() => {
-        // Refresh state when returning to this page
-        const handleFocus = () => {
-            console.log('Page visible, refreshing state...');
-            fetchDraftState();
-        };
-
-        window.addEventListener('focus', handleFocus);
-        
-        // Also refresh when the page is shown (browser back/forward)
-        window.addEventListener('pageshow', handleFocus);
-
-        return () => {
-            window.removeEventListener('focus', handleFocus);
-            window.removeEventListener('pageshow', handleFocus);
-        };
-    }, []);
-
-
-    // this checks if draft has been initializes and only init if needed
-    const check_InitializedDraft = async () => { 
-        try{    
-            const response = await fetch(`${API_URL}/state`);
-            const data = await response.json(); 
-
-            console.log('draft state check: ', data);
-
-            if(!data.availablePlayers || data.availablePlayers.length === 0){
-                console.log('No players found, initializing draft...');
-                await initializeDraft();
-            } else {
-                // Draft already initialized, just fetch state
-                await fetchDraftState();
-            }
-            
-
-        } catch (error ){
-            console.error('Error checking draft state:', error);
-            await initializeDraft();
-        }
-    };
-
-    const initializeDraft = async () => {
-        try {
-            const resetResponse = await fetch(`${API_URL}/reset`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    participants: [
-                        { participantId: myParticipantId, teamId: "team1", order: 0, team: [] },
-                        { participantId: "user2", teamId: "team2", order: 1, team: [] }
-                    ]
-                })
-            });
-            
-            if (resetResponse.ok) {
-                console.log('Draft initialized successfully');
-                await fetchDraftState();
-            }
-        } catch (error) {
-            console.error('Error initializing draft:', error);
-        }
-    };
 
     const fetchDraftState = async () => {
         try {

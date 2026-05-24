@@ -9,8 +9,20 @@ function NameEntry() {
 
   const [name, setName] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    await fetch(`${import.meta.env.VITE_API_URL}/draft/reset`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        participants: [
+          { participantId: name, teamId: 'team1', order: 0, team: [] },
+          { participantId: 'user2', teamId: 'team2', order: 1, team: [] }
+        ]
+      })
+    });
+
     navigate('/waiting', { state: { name: name, mode: mode } });
   };
 

@@ -1,6 +1,7 @@
 // Waiting.jsx
 import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './Waiting.css';
 
 function Waiting() {
@@ -31,11 +32,12 @@ const [currentParticipant, setCurrentParticipant] = useState(null);
         <h1 className="header">It's {currentParticipant?.participantId}'s Turn...</h1>
         <h3 className="subtitle">Wait until your turn!</h3>
 
-        {currentParticipant.participantId === name && (
+         {currentParticipant.participantId === name && (
             <button className="nextButton" onClick={() => navigate('/userchoice', { state: { name } })}>
                 Next
             </button>
         )}
+
       </div>
 
       <div className="circle" aria-hidden="true" />
