@@ -1,5 +1,5 @@
 // Type Definitions
-export type Player = {
+export type SoccerPlayer = {
   id: string | number; // allow numbers coming from JSON, we normalize later
   name: string;
   position: string;
@@ -7,19 +7,19 @@ export type Player = {
   club: string;
 };
 
-export type Participant = {
-  participantId: string;
+export type DraftTeam = {
+  userName: string;
   teamId: string;
   order: number;
-  team: Player[]; // Ruby add
+  roster: SoccerPlayer[];
 };
 
 export type DraftGameState = {
   currentRound: number;
-  currentParticipantIndex: number;
-  participants: Participant[];
-  selectedPlayerIds: Set<string>; // always store as normalized string
-  availablePlayers: Player[];
+  currentTeamIndex: number;
+  draftTeams: DraftTeam[];
+  selectedSoccerPlayerIds: Set<string>; // always store as normalized string
+  playerPool: SoccerPlayer[];
 };
 
 // --- Utils ---
@@ -29,64 +29,55 @@ const normalizeId = (id: string | number | undefined | null): string =>
 // Global Game State
 let draftGameState: DraftGameState = {
   currentRound: 1,
-  currentParticipantIndex: 0,
-  participants: [
-    { participantId: "user1", teamId: "team1", order: 0, team: [] },
-    //{ participantId: "user2", teamId: "team2", order: 1, team: [] },
+  currentTeamIndex: 0,
+  draftTeams: [
+    { userName: "user1", teamId: "team1", order: 0, roster: [] },
   ],
-  selectedPlayerIds: new Set<string>(),
-  availablePlayers: [],
+  selectedSoccerPlayerIds: new Set<string>(),
+  playerPool: [],
 };
 
-// Functions
-
-// Returns the participant whose turn it currently is
-export function getCurrentParticipant(): Participant {
-  const participant =
-    draftGameState.participants[draftGameState.currentParticipantIndex];
-  if (!participant) {
-    throw new Error("Current participant not found");
+// Returns the DraftTeam whose turn it currently is
+export function getCurrentTeam(): DraftTeam {
+  const team = draftGameState.draftTeams[draftGameState.currentTeamIndex];
+  if (!team) {
+    throw new Error("Current team not found");
   }
-  return participant;
+  return team;
 }
 
-// Picks a player for the current participant
+// Picks a soccer player for the current team
 export function pickPlayer(playerUniqueId: string) {
   if (!playerUniqueId) {
     return { success: false, message: "Player ID is missing." };
   }
 
-  // normalize inputs to avoid string/number or whitespace mismatches
   const normalized = normalizeId(playerUniqueId);
 
-  if (draftGameState.selectedPlayerIds.has(normalized)) {
+  if (draftGameState.selectedSoccerPlayerIds.has(normalized)) {
     return { success: false, message: "Player has already been picked." };
   }
 
-  // find by normalized id
-  const player = draftGameState.availablePlayers.find(
+  const soccerPlayer = draftGameState.playerPool.find(
     (p) => normalizeId(p.id) === normalized
   );
 
-  if (!player) {
+  if (!soccerPlayer) {
     return { success: false, message: "Player not found." };
   }
 
-  const currentParticipant = getCurrentParticipant();
-  currentParticipant.team.push(player);
+  const currentTeam = getCurrentTeam();
+  currentTeam.roster.push(soccerPlayer);
 
-  draftGameState.selectedPlayerIds.add(normalized);
+  draftGameState.selectedSoccerPlayerIds.add(normalized);
   return { success: true, message: "Player successfully picked!" };
 }
 
-// Moves the turn to the next participant
+// Moves the turn to the next team
 export function moveToNextTurn() {
-  draftGameState.currentParticipantIndex++;
-  if (
-    draftGameState.currentParticipantIndex >=
-    draftGameState.participants.length
-  ) {
-    draftGameState.currentParticipantIndex = 0;
+  draftGameState.currentTeamIndex++;
+  if (draftGameState.currentTeamIndex >= draftGameState.draftTeams.length) {
+    draftGameState.currentTeamIndex = 0;
     draftGameState.currentRound++;
   }
 }
@@ -96,49 +87,40 @@ export function getDraftState(): DraftGameState {
   return draftGameState;
 }
 
-// Resets the entire draft for testing or starting a new game
+// Resets the entire draft for a new game
 export function resetDraftGame(
-  newParticipants: Participant[],
-  players: Player[]
+  newDraftTeams: DraftTeam[],
+  players: SoccerPlayer[]
 ) {
   draftGameState = {
     currentRound: 1,
-    currentParticipantIndex: 0,
-    participants: newParticipants
-      .map((p) => ({ ...p, team: p.team ?? [] }))
+    currentTeamIndex: 0,
+    draftTeams: newDraftTeams
+      .map((t) => ({ ...t, roster: t.roster ?? [] }))
       .sort((a, b) => a.order - b.order),
-    selectedPlayerIds: new Set<string>(),
-    availablePlayers: players,
+    selectedSoccerPlayerIds: new Set<string>(),
+    playerPool: players,
   };
 }
 
-// Helpers
-
-export function getCurrentTeam(): Player[] {
-  const currentParticipant = getCurrentParticipant();
-  return currentParticipant.team;
+// Returns a specific team's roster by userName
+export function getTeamRoster(userName: string): SoccerPlayer[] | null {
+  const team = draftGameState.draftTeams.find((t) => t.userName === userName);
+  return team ? team.roster : null;
 }
 
-// Returns a specific participant's team by participantId
-export function getParticipantTeam(participantId: string): Player[] | null {
-  const participant = draftGameState.participants.find(
-    (p) => p.participantId === participantId
-  );
-  return participant ? participant.team : null;
+// Returns all draft teams with their rosters
+export function getAllDraftTeams(): DraftTeam[] {
+  return draftGameState.draftTeams;
 }
 
-// Returns all participants with their teams
-export function getAllParticipantsWithTeams(): Participant[] {
-  return draftGameState.participants;
+export function setPlayerPool(players: SoccerPlayer[]) {
+  draftGameState.playerPool = players;
 }
 
-export function setAvailablePlayers(players: Player[]) {
-  draftGameState.availablePlayers = players;
-}
-
-// Returns only the players who haven't been picked yet
-export function getAvailablePlayers(): Player[] {
-  return draftGameState.availablePlayers.filter(
-    (player) => !draftGameState.selectedPlayerIds.has(normalizeId(player.id))
+// Returns only the soccer players who haven't been picked yet
+export function getPlayerPool(): SoccerPlayer[] {
+  return draftGameState.playerPool.filter(
+    (player) => !draftGameState.selectedSoccerPlayerIds.has(normalizeId(player.id))
   );
 }

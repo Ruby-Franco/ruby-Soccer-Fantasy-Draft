@@ -16,9 +16,9 @@ function NameEntry() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        participants: [
-          { participantId: name, teamId: 'team1', order: 0, team: [] },
-          { participantId: 'user2', teamId: 'team2', order: 1, team: [] }
+        draftTeams: [
+          { userName: name, teamId: 'team1', order: 0, roster: [] },
+          { userName: 'user2', teamId: 'team2', order: 1, roster: [] }
         ]
       })
     });

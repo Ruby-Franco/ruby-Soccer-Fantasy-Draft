@@ -1,22 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './UserChoice.css';
-//const API_URL = 'http://localhost:3000/draft';
+
 const API_URL = `${import.meta.env.VITE_API_URL}/draft`;
 
 function UserChoice(){
 
     const navigate = useNavigate();
     const [selectedAthlete, setSelectedAthlete] = useState(null);
-    const [availablePlayers, setAvailablePlayers] = useState([]);
+    const [playerPool, setPlayerPool] = useState([]);
     const [currentRound, setCurrentRound] = useState(1);
     const [pointsLeft, setPointsLeft] = useState(100);
-    const [currentTeam, setCurrentTeam] = useState([]);
-    const [currentParticipant, setCurrentParticipant] = useState(null);
+    const [myRoster, setMyRoster] = useState([]);
 
     const location = useLocation();
     const { name } = location.state;
-    const [myParticipantId] = useState(name);
 
     useEffect(() => {
         fetchDraftState();
@@ -26,40 +24,27 @@ function UserChoice(){
         try {
             const response = await fetch(`${API_URL}/state`);
             const data = await response.json();
-            
-            
-            console.log('Fetched draft state:', data);
-            console.log('Available players:', data.availablePlayers?.length);
-            console.log('My team:', data.participants.find(p => p.participantId === myParticipantId)?.team);
-            
-            
+
             setCurrentRound(data.currentRound);
-            
-            const myParticipant = data.participants.find(p => p.participantId === myParticipantId);
-            
-            if (myParticipant) {
-                setCurrentParticipant(myParticipant);
-                setCurrentTeam(myParticipant.team);
-                
-                // Calculate points left for MY team
-                const usedPoints = myParticipant.team.reduce((sum, player) => sum + player.cost, 0);
+
+            const myDraftTeam = data.draftTeams.find(t => t.userName === name);
+
+            if (myDraftTeam) {
+                setMyRoster(myDraftTeam.roster);
+                const usedPoints = myDraftTeam.roster.reduce((sum, player) => sum + player.cost, 0);
                 setPointsLeft(100 - usedPoints);
-            }    
-            
-            // Get available players (not picked yet)
-            const selectedIds = Array.isArray(data.selectedPlayerIds) 
-                ? data.selectedPlayerIds 
-                : Array.from(data.selectedPlayerIds || []);
+            }
 
-            console.log('Selected IDs after conversion:', selectedIds);
+            const selectedIds = Array.isArray(data.selectedSoccerPlayerIds)
+                ? data.selectedSoccerPlayerIds
+                : Array.from(data.selectedSoccerPlayerIds || []);
 
-            const available = data.availablePlayers.filter(
+            const available = data.playerPool.filter(
                 player => !selectedIds.includes(String(player.id))
             );
 
-            console.log('Filtered available players:', available);
-            setAvailablePlayers(available);
-            
+            setPlayerPool(available);
+
         } catch (error) {
             console.error('Error fetching draft state:', error);
         }
@@ -88,17 +73,16 @@ function UserChoice(){
             });
 
             const result = await response.json();
-            
+
             if (result.ok) {
                 setSelectedAthlete(null);
-                
+
                 const stateResponse = await fetch(`${API_URL}/state`);
                 const draftState = await stateResponse.json();
-                
-                const myParticipant = draftState.participants.find(p => p.participantId === myParticipantId);
-                
-                // END GAME AFTER 2 rounds
-                if (myParticipant && myParticipant.team.length >= 3) {
+
+                const myDraftTeam = draftState.draftTeams.find(t => t.userName === name);
+
+                if (myDraftTeam && myDraftTeam.roster.length >= 3) {
                     navigate('/teamdisplay', { state: { name, mode: 'create' } });
                 } else {
                     navigate('/waiting', { state: { name, mode: 'create' } });
@@ -117,21 +101,21 @@ function UserChoice(){
         <div className="player-select-page">
             <div className='status-container'>
                 <div style={{ fontSize: '1.1rem', fontWeight: '600' }}>
-                Current Round: {currentRound}
+                    Current Round: {currentRound}
                 </div>
                 <div style={{ fontSize: '1.1rem', fontWeight: '600' }}>
                     Points Left: {pointsLeft}
                 </div>
             </div>
 
-           <div className='status-container team-container'>
-              <div style={{ fontWeight: 'bold', marginBottom: '10px', fontSize: '1.1rem' }}>
-                    Your Team:
+            <div className='status-container team-container'>
+                <div style={{ fontWeight: 'bold', marginBottom: '10px', fontSize: '1.1rem' }}>
+                    Your Roster:
                 </div>
-                
+
                 <div className="team-slots">
                     {[...Array(5)].map((_, idx) => {
-                        const player = currentTeam[idx];
+                        const player = myRoster[idx];
                         return (
                             <span key={idx} className={player ? 'team-slot filled' : 'team-slot empty'}>
                                 {player ? player.name : `Player ${idx + 1}`}
@@ -141,7 +125,7 @@ function UserChoice(){
                     })}
                 </div>
             </div>
-            
+
             <div className='athletes-container'>
                 <div className='athletes-header'>
                     <h2>    Player Name</h2>
@@ -151,21 +135,19 @@ function UserChoice(){
                 </div>
 
                 <div className='athletes-list flex'>
-                    {availablePlayers.map((athlete) => (
-                   <div 
-                        key={athlete.id} 
-                        className={`player-row ${selectedAthlete?.id === athlete.id ? 'selected' : ''}`}
-                        onClick={() => handlePlayerClick(athlete)}
-                    >
-                        <div>{athlete.name}</div>
-                        <div>{athlete.position}</div>
-                        <div>{athlete.club}</div>
-                        <div>{athlete.cost}</div>
-                    </div>
-                ))}
+                    {playerPool.map((athlete) => (
+                        <div
+                            key={athlete.id}
+                            className={`player-row ${selectedAthlete?.id === athlete.id ? 'selected' : ''}`}
+                            onClick={() => handlePlayerClick(athlete)}
+                        >
+                            <div>{athlete.name}</div>
+                            <div>{athlete.position}</div>
+                            <div>{athlete.club}</div>
+                            <div>{athlete.cost}</div>
+                        </div>
+                    ))}
                 </div>
-
-
             </div>
 
             <button className="select-btn" onClick={handleSelect}>
@@ -173,7 +155,7 @@ function UserChoice(){
             </button>
 
         </div>
-    ); 
+    );
 }
 
-export default UserChoice  
+export default UserChoice;
