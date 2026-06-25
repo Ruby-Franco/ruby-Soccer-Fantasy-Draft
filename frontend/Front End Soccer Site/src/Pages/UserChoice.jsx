@@ -82,11 +82,12 @@ function UserChoice(){
 
                 const myDraftTeam = draftState.draftTeams.find(t => t.userName === name);
 
-                if (myDraftTeam && myDraftTeam.roster.length >= 3) {
-                    navigate('/teamdisplay', { state: { name, mode: 'create' } });
-                } else {
-                    navigate('/waiting', { state: { name, mode: 'create' } });
-                }
+                // if (myDraftTeam && myDraftTeam.roster.length >= 5) {
+                //     navigate('/teamdisplay', { state: { name, mode: 'create' } });
+                // } else {
+                //     navigate('/waiting', { state: { name, mode: 'create' } });
+                // }
+                navigate('/waiting', { state: { name, mode: 'create' } });
 
             } else {
                 alert(result.message || 'Failed to pick player');

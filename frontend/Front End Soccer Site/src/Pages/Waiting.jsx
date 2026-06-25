@@ -10,6 +10,7 @@ function Waiting() {
   const { name } = location.state;
   const [currentDraftTeam, setCurrentDraftTeam] = useState(null);
   const [botPicking, setBotPicking] = useState(false);
+  const [countdown, setCountdown] = useState(5);
 
   const autoPickForBot = async () => {
     setBotPicking(true);
@@ -25,12 +26,13 @@ function Waiting() {
       p => !selectedIds.includes(String(p.id))
     );
 
-    if (available.length === 0) {
+    if (available.length === 0) { // if player pool empty
       setBotPicking(false);
       return;
     }
 
     const randomPlayer = available[Math.floor(Math.random() * available.length)];
+    // randomPlayer algorithm can be improved
 
     await fetch(`${API_URL}/pick`, {
       method: 'POST',
@@ -38,7 +40,17 @@ function Waiting() {
       body: JSON.stringify({ playerId: String(randomPlayer.id) })
     });
 
+    const freshStateRes = await fetch(`${API_URL}/state`);
+    const freshState = await freshStateRes.json();
+    const allTeamsDone = freshState.draftTeams.every(team => team.roster.length >= 5);
+    if (allTeamsDone) {
+        navigate('/teamdisplay', { state: { name } });
+        return;
+    }
+
+
     const currentRes = await fetch(`${API_URL}/current`);
+    
     const current = await currentRes.json();
     setCurrentDraftTeam(current);
     setBotPicking(false);
@@ -50,7 +62,15 @@ function Waiting() {
       .then(data => {
         setCurrentDraftTeam(data);
         if (data.userName !== name) {
-          setTimeout(() => autoPickForBot(), 1000);
+          const interval = setInterval(() => {
+          setCountdown(prev => {
+          if (prev === 1) {
+            autoPickForBot();
+            clearInterval(interval);
+          }
+            return prev - 1;
+          });
+        }, 1000);
         }
       });
   }, []);
@@ -65,7 +85,10 @@ function Waiting() {
             ? `${currentDraftTeam.userName} is picking...`
             : `It's ${currentDraftTeam.userName}'s Turn...`}
         </h1>
-        <h3 className="subtitle">Wait until your turn!</h3>
+
+        <h3 className="subtitle"> {currentDraftTeam.userName === name 
+      ? "It's your turn! Click Next" 
+      : `${countdown} seconds until your turn!`}</h3>
 
         {currentDraftTeam.userName === name && (
           <button className="nextButton" onClick={() => navigate('/userchoice', { state: { name } })}>
