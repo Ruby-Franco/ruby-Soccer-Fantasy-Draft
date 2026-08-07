@@ -22,6 +22,9 @@ export type DraftGameState = {
   playerPool: SoccerPlayer[];
 };
 
+// --- Constants ---
+export const BUDGET_LIMIT = 100;
+
 // --- Utils ---
 const normalizeId = (id: string | number | undefined | null): string =>
   String(id ?? "").trim();
@@ -67,6 +70,11 @@ export function pickPlayer(playerUniqueId: string) {
   }
 
   const currentTeam = getCurrentTeam();
+  const spentPoints = currentTeam.roster.reduce((sum, p) => sum + p.cost, 0);
+  if (spentPoints + soccerPlayer.cost > BUDGET_LIMIT) {
+    return { success: false, message: "Not enough budget to pick this player." };
+  }
+
   currentTeam.roster.push(soccerPlayer);
 
   draftGameState.selectedSoccerPlayerIds.add(normalized);
